@@ -1,4 +1,14 @@
-import { Button, Card, CardContent, Typography } from '@mui/material'
+import {
+  Button,
+  Card,
+  CardContent,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Typography,
+} from '@mui/material'
 import Image from 'next/image'
 import React, { useState } from 'react'
 import BMI from '../../public/bmi.jpg'
@@ -14,23 +24,33 @@ const BmiCard = () => {
   const [inches, setInches] = useState()
   const [bmi, setBmi] = useState()
 
-  // const schema = z.object({
-  //   age: z.string().min(1, { message: 'Age is required !' }),
-  //   weight: z.string().min(1, { message: 'Weight is required !' }),
-  //   height: z.object({
-  //     ft: z.string().min(1, { message: 'ft is required' }),
-  //     inches: z.string().min(1, { message: 'inches is required' }),
-  //   }),
-  // })
+  const [open, setOpen] = React.useState(false)
 
-  // const {
-  //   register,
-  //   handleSubmit,
-  //   reset,
-  //   formState: { errors },
-  // } = useForm({
-  //   resolver: zodResolver(schema),
-  // })
+  const handleClickOpen = () => {
+    setOpen(true)
+  }
+
+  const handleClose = () => {
+    setOpen(false)
+  }
+
+  const schema = z.object({
+    age: z.string().min(1, { message: 'Age is required !' }),
+    weight: z.string().min(1, { message: 'Weight is required !' }),
+    height: z.object({
+      ft: z.string().min(1, { message: 'ft is required' }),
+      inches: z.string().min(1, { message: 'inches is required' }),
+    }),
+  })
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(schema),
+  })
 
   const handleAge = (event) => {
     const value = event.target.value
@@ -61,6 +81,7 @@ const BmiCard = () => {
     console.log(bmi)
 
     setBmi(bmi)
+    setOpen(true)
 
     const status = getBmiStatus(bmi)
 
@@ -68,8 +89,8 @@ const BmiCard = () => {
   }
   return (
     <>
-      <div className="w-full h-full mb-3 mt-3">
-        <div className="flex justify-center">
+      <form onSubmit={handleSubmit(onCalculate)}>
+        <div className="flex justify-center mt-5">
           <Card
             sx={{
               minWidth: '300px',
@@ -100,11 +121,12 @@ const BmiCard = () => {
                     id="age"
                     onChange={handleAge}
                     value={age}
+                    {...register('age')}
                   />
 
-                  {/* <p className="text-warningClr mt-3 font-poppins">
+                  <p className="text-warningClr mt-3 font-poppins">
                     {errors.age?.message?.toString()}
-                  </p> */}
+                  </p>
                   <input
                     type="text"
                     className="w-[80%] bg-transparent border-b-2 border-black  outline-none focus:border-black-400 block mt-4 text-sm text-center"
@@ -112,10 +134,11 @@ const BmiCard = () => {
                     id="weight"
                     onChange={handleWeight}
                     value={weight}
+                    {...register('weight')}
                   />
-                  {/* <p className="text-warningClr mt-3 font-poppins">
+                  <p className="text-warningClr mt-3 font-poppins">
                     {errors.weight?.message?.toString()}
-                  </p> */}
+                  </p>
 
                   <input
                     type="number"
@@ -125,9 +148,9 @@ const BmiCard = () => {
                     onChange={handleFeet}
                     value={feet}
                   />
-                  {/* <p className="text-warningClr mt-3 font-poppins">
+                  <p className="text-warningClr mt-3 font-poppins">
                     {errors.ft?.message?.toString()}
-                  </p> */}
+                  </p>
                   <input
                     type="number"
                     className="w-[80%] bg-transparent border-b-2 border-black  outline-none focus:border-black-400 block mt-5 text-center text-sm"
@@ -136,9 +159,9 @@ const BmiCard = () => {
                     onChange={handleInches}
                     value={inches}
                   />
-                  {/* <p className="text-warningClr mt-3 font-poppins">
+                  <p className="text-warningClr mt-3 font-poppins">
                     {errors.inches?.message?.toString()}
-                  </p> */}
+                  </p>
                 </div>
               </div>
               <div className="flex w-full justify-center mt-5">
@@ -154,9 +177,56 @@ const BmiCard = () => {
                 <Image src={BMI} alt=""></Image>
               </div>
             </CardContent>
+
+            {feet ||
+              weight ||
+              inches ||
+              (age && (
+                <Dialog open={open} onClose={handleClose}>
+                  <DialogTitle id="alert-dialog-title">
+                    <div className="flex gap-5">
+                      <span className="font-bold">Your BMI is:</span>
+                      <span>{bmi}</span>
+                    </div>
+                  </DialogTitle>
+                  <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                      {bmi && bmi >= 18.5 && bmi <= 24.9 ? (
+                        <span>
+                          You are normal. A healthy life, healthy body!
+                        </span>
+                      ) : bmi < 18.5 ? (
+                        <span>
+                          You are underweight. Please consume food contains
+                          protein more.
+                        </span>
+                      ) : bmi > 24.9 && bmi <= 29.9 ? (
+                        <span>
+                          You are overweight!Try to do some exercises and
+                          consume less fast foods!
+                        </span>
+                      ) : bmi > 29.9 ? (
+                        <span>You are obese! Please see a doctor!</span>
+                      ) : (
+                        ''
+                      )}
+                    </DialogContentText>
+                  </DialogContent>
+                  <DialogActions>
+                    <div className="flex justify-center w-full ">
+                      <button
+                        onClick={handleClose}
+                        className="bg-purple-300 w-[50%] h-7 rounded-xl mb-1"
+                      >
+                        OK
+                      </button>
+                    </div>
+                  </DialogActions>
+                </Dialog>
+              ))}
           </Card>
         </div>
-      </div>
+      </form>
     </>
   )
 }
