@@ -4,10 +4,9 @@ export default function Layout({ children }) {
   return (
     <>
       <div className="w-full h-full">
-        <body>
-          {/* <Navbar /> */}
-          <main>{children}</main>
-        </body>
+        <Navbar />
+
+        <main>{children}</main>
 
         {/* <Footer /> */}
       </div>
