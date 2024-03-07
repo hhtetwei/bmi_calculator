@@ -15,7 +15,7 @@ import BMI from '../../public/bmi.jpg'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { getBmiStatus } from './utils/getBmiStatus'
+import getBmiStatus from './utils/getBmiStatus'
 
 const BmiCard = () => {
   const [bmi, setBmi] = useState()

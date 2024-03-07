@@ -1,3 +1,5 @@
+import BmiCard from './Bmi'
+
 export default function Home() {
-  return null;
+  return <BmiCard />
 }
