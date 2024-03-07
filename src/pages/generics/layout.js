@@ -5,10 +5,7 @@ export default function Layout({ children }) {
     <>
       <div className="w-full h-full">
         <Navbar />
-
         <main>{children}</main>
-
-        {/* <Footer /> */}
       </div>
     </>
   )
